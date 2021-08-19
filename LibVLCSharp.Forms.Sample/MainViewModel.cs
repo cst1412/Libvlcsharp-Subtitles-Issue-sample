@@ -1,6 +1,7 @@
 ﻿using LibVLCSharp.Shared;
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LibVLCSharp.Forms.Sample
@@ -40,7 +41,7 @@ namespace LibVLCSharp.Forms.Sample
             Core.Initialize();
 
             LibVLC = new LibVLC(enableDebugLogs: true);
-            var media = new Media(LibVLC, new Uri("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"));
+            var media = new Media(LibVLC, new Uri("http://raw.githubusercontent.com/cst1412/Libvlcsharp-Subtitles-Issue-sample/master/encoded_sample.mkv"));
 
             MediaPlayer = new MediaPlayer(LibVLC)
             {
@@ -73,6 +74,11 @@ namespace LibVLCSharp.Forms.Sample
             if (IsLoaded && IsVideoViewInitialized)
             {
                 MediaPlayer.Play();
+                MediaTrack? subtitleTrack = this.MediaPlayer.Media.Tracks.FirstOrDefault(x => x.TrackType == TrackType.Text);
+                if(subtitleTrack.HasValue)
+                {
+                    this.MediaPlayer.SetSpu(subtitleTrack.Value.Id);
+                }
             }
         }
     }
