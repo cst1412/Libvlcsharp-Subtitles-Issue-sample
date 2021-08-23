@@ -22,9 +22,9 @@ namespace LibVLCSharp.Forms.Sample
             ((MainViewModel)BindingContext).OnDisappearing();
         }
 
-        private void VideoView_MediaPlayerChanged(object sender, MediaPlayerChangedEventArgs e)
+        private async void VideoView_MediaPlayerChanged(object sender, MediaPlayerChangedEventArgs e)
         {
-            ((MainViewModel)BindingContext).OnVideoViewInitialized();
+            await ((MainViewModel)BindingContext).OnVideoViewInitialized();
         }
     }
 }

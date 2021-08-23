@@ -12,7 +12,9 @@ namespace LibVLCSharp.Forms.Sample
 
         public MainViewModel()
         {
+
             Initialize();
+
         }
 
         private LibVLC LibVLC { get; set; }
@@ -41,14 +43,9 @@ namespace LibVLCSharp.Forms.Sample
             Core.Initialize();
 
             LibVLC = new LibVLC(enableDebugLogs: true);
-            var media = new Media(LibVLC, new Uri("http://raw.githubusercontent.com/cst1412/Libvlcsharp-Subtitles-Issue-sample/master/encoded_sample.mkv"));
 
-            MediaPlayer = new MediaPlayer(LibVLC)
-            {
-                Media = media
-            };
+            MediaPlayer = new MediaPlayer(LibVLC);
 
-            media.Dispose();
         }
 
         public void OnAppearing()
@@ -63,10 +60,18 @@ namespace LibVLCSharp.Forms.Sample
             LibVLC.Dispose();
         }
 
-        public void OnVideoViewInitialized()
+        public async Task OnVideoViewInitialized()
         {
+            var media = new Media(LibVLC, new Uri("http://raw.githubusercontent.com/cst1412/Libvlcsharp-Subtitles-Issue-sample/master/encoded_sample.mkv"));
+            await media.Parse(MediaParseOptions.ParseNetwork);
+
             IsVideoViewInitialized = true;
+
+            this.MediaPlayer.Media = media;
+
             Play();
+
+            media.Dispose();
         }
 
         private void Play()
@@ -75,7 +80,7 @@ namespace LibVLCSharp.Forms.Sample
             {
                 MediaPlayer.Play();
                 MediaTrack? subtitleTrack = this.MediaPlayer.Media.Tracks.FirstOrDefault(x => x.TrackType == TrackType.Text);
-                if(subtitleTrack.HasValue)
+                if (subtitleTrack.HasValue)
                 {
                     this.MediaPlayer.SetSpu(subtitleTrack.Value.Id);
                 }
